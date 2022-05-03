@@ -1,9 +1,10 @@
 """Display bus times on an e-ink screen"""
 
-from nimbus import nextbus
-from nimbus import epaper
-from datetime import datetime
 import math
+import argparse
+from nimbus import nextbus
+
+
 def print_buses(bus_stop_name, buses, last_updated):
     """Send bus information to standard output"""
 
@@ -45,7 +46,7 @@ def main():
             due = '1 min'
         else:
             minutes = math.ceil(seconds / 60)
-            due = '{} mins'.format(minutes)
+            due = f'{minutes} mins'
 
         buses.append((bus, destination, due))
 
