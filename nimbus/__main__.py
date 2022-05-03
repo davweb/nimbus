@@ -4,9 +4,29 @@ from nimbus import nextbus
 from nimbus import epaper
 from datetime import datetime
 import math
+def print_buses(bus_stop_name, buses, last_updated):
+    """Send bus information to standard output"""
+
+    print(bus_stop_name)
+
+    for (bus, destination, due) in buses:
+        print(bus,destination,due)
+
+    print(last_updated)
+
 
 def main():
     """Entrypoint function"""
+
+    parser = argparse.ArgumentParser(description='Display bus times on an e-ink screen.')
+    parser.add_argument('-c', '--console', action='store_true',
+        help='Display output on the console')
+    args = parser.parse_args()
+    console = args.console
+
+    # Conditional import so we can test code on non-RPi systems
+    if not console:
+        from nimbus import epaper
 
     #bus_stop_id = 'oxfadgdw'
     bus_stop_id = 'oxfadgpm'
@@ -29,7 +49,12 @@ def main():
 
         buses.append((bus, destination, due))
 
-    epaper.display(bus_stop_name, buses, refresh_time.strftime('Last updated %H:%M'))
+    last_updated = refresh_time.strftime('Last updated %H:%M')
+
+    if console:
+        print_buses(bus_stop_name, buses, last_updated)
+    else:
+        epaper.display(bus_stop_name, buses, last_updated)
 
 if __name__ == '__main__':
     main()
