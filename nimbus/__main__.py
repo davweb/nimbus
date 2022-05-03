@@ -18,7 +18,6 @@ def main():
 
     for (bus, destination, due) in raw_buses[:3]:
         seconds = (due - refresh_time).total_seconds()
-        print(refresh_time,due,seconds)
 
         if seconds == 0:
             due = 'due'
@@ -30,7 +29,6 @@ def main():
 
         buses.append((bus, destination, due))
 
-    print(buses)
     epaper.display(bus_stop_name, buses, refresh_time.strftime('Last updated %H:%M'))
 
 if __name__ == '__main__':
