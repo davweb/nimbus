@@ -8,15 +8,17 @@ import requests
 
 
 TIMES_URL = 'http://www.nextbuses.mobi/WebView/BusStopSearch/BusStopSearchResults/{}'
+PATTERN_DUE = re.compile(r'(.*) DUE$')
 PATTERN_AT = re.compile(r'(.*) at (\d+:\d+)$')
 PATTERN_IN = re.compile(r'(.*) in (\d+) mins?')
 
+PARSER_CONFIG = parser.parserinfo(dayfirst=True)
 
 def _extract_refresh_time(root):
     """Extract the refresh time from a bus stop page"""
 
     refresh_time_span = root.select('div.content h5 span')[1]
-    return parser.parse(refresh_time_span.text)
+    return parser.parse(refresh_time_span.text, PARSER_CONFIG)
 
 
 def _extract_bus_arrivals(root):
@@ -35,19 +37,20 @@ def _extract_bus_arrivals(root):
         bus_number = bus_number_element[0].text
         bus_details = bus_details_element[0].text
 
-        in_result = PATTERN_IN.match(bus_details)
-        at_result = PATTERN_AT.match(bus_details)
-
-        if in_result:
+        if due_result := PATTERN_DUE.match(bus_details):
+            destination = due_result[1]
+            bus_time = refresh_time
+        elif in_result := PATTERN_IN.match(bus_details):
             destination = in_result[1]
             minutes = int(in_result[2])
             bus_time = refresh_time + timedelta(minutes=minutes)
-        elif at_result:
+        elif at_result := PATTERN_AT.match(bus_details):
             destination = at_result[1]
-            bus_time = parser.parse(at_result[2])
+            bus_time = parser.parse(at_result[2], PARSER_CONFIG)
         else:
             continue
 
+        destination = destination.replace('and', '&')
         comma_index = destination.find(',')
 
         if comma_index != -1:
