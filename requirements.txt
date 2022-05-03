@@ -1,0 +1,8 @@
+bs4
+python-dateutil
+requests
+RPi.GPIO
+smbus
+spidev
+numpy
+Pillow
