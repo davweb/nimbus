@@ -17,6 +17,8 @@ def print_buses(bus_stop_name, buses, last_updated):
 
 
 def format_due(due_time, refresh_time):
+    """Format bus due time"""
+
     seconds = (due_time - refresh_time).total_seconds()
 
     if seconds == 0:
@@ -39,8 +41,11 @@ def main():
     parser = argparse.ArgumentParser(description='Display bus times on an e-ink screen.')
     parser.add_argument('-c', '--console', action='store_true',
         help='Display output on the console')
+    parser.add_argument('bus_stop_id', nargs='+', help='Bus Stop ID')
+
     args = parser.parse_args()
     console = args.console
+    bus_stops = args.bus_stop_id
 
     # Conditional import so we can test code on non-RPi systems
     if not console:
@@ -49,18 +54,15 @@ def main():
         touch.init()
 
     change = True
-    bus_stop_id = None
+    bus_stop_index = -1
 
     while True:
         if change:
-            if bus_stop_id == 'oxfadgdw':
-                bus_stop_id = 'oxfadgpm'
-                bus_stop_name = 'Raleigh Park Road'
-            else:
-                bus_stop_id = 'oxfadgdw'
-                bus_stop_name = 'Laburnum Road'
+            bus_stop_index += 1
+            bus_stop_index %= len(bus_stops)
+            bus_stop_id = bus_stops[bus_stop_index]
 
-        (refresh_time, raw_buses) = nextbus.extract_bus_information(bus_stop_id)
+        (bus_stop_name, refresh_time, raw_buses) = nextbus.extract_bus_information(bus_stop_id)
 
         buses = []
 
