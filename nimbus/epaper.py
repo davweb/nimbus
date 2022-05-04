@@ -13,31 +13,19 @@ COLOUR_BLACK = 0
 COLOUR_WHITE = 255
 
 DISPLAY = epd2in13_V2.EPD_2IN13_V2()
+DISPLAY.init(DISPLAY.FULL_UPDATE)
 
 # Width and height reverse to rotate screen
 WIDTH = DISPLAY.height
 HEIGHT = DISPLAY.width
 
 COUNT_FILE = '/tmp/epaper-refresh-count'
+refresh_count = 0
 
-def _refresh_count():
-    """Keep a count of the number of times we've refreshed"""
-
-    try:
-        with open(COUNT_FILE, encoding='utf-8') as count_file:
-            count = int(count_file.read())
-    except FileNotFoundError:
-        count = 0
-
-    with open(COUNT_FILE, 'w', encoding='utf-8') as count_file:
-        count_file.write(str(count + 1))
-
-    return count
-
-
-def display(stop_name, buses, last_updated):
+def display(stop_name, buses, last_updated, force_full_update):
     """Display bus information to the screen"""
 
+    global refresh_count
     image = Image.new('1', (WIDTH, HEIGHT), COLOUR_WHITE)
 
     draw = ImageDraw.Draw(image)
@@ -74,9 +62,11 @@ def display(stop_name, buses, last_updated):
     image = image.transpose(Transpose.ROTATE_180)
     display_image = DISPLAY.getbuffer(image)
 
-    if _refresh_count() % 10 == 0:
+    if force_full_update or refresh_count >= 10:
         DISPLAY.init(DISPLAY.FULL_UPDATE)
         DISPLAY.displayPartBaseImage(display_image)
+        refresh_count = 1
     else:
         DISPLAY.init(DISPLAY.PART_UPDATE)
         DISPLAY.displayPartial(display_image)
+        refresh_count += 1

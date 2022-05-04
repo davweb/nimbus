@@ -16,6 +16,23 @@ def print_buses(bus_stop_name, buses, last_updated):
     print(last_updated)
 
 
+def format_due(due_time, refresh_time):
+    seconds = (due_time - refresh_time).total_seconds()
+
+    if seconds == 0:
+        return 'due'
+
+    if seconds < 61:
+        return  '1 min'
+
+    minutes = math.ceil(seconds / 60)
+
+    if minutes <= 60:
+        return f'{minutes} mins'
+
+    return due_time.strftime('%-H:%M')
+
+
 def main():
     """Entrypoint function"""
 
@@ -28,34 +45,38 @@ def main():
     # Conditional import so we can test code on non-RPi systems
     if not console:
         from nimbus import epaper
+        from nimbus import touch
+        touch.init()
 
-    #bus_stop_id = 'oxfadgdw'
-    bus_stop_id = 'oxfadgpm'
-    bus_stop_name = 'Raleigh Park Road'
+    change = True
+    bus_stop_id = None
 
-    (refresh_time, raw_buses) = nextbus.extract_bus_information(bus_stop_id)
+    while True:
+        if change:
+            if bus_stop_id == 'oxfadgdw':
+                bus_stop_id = 'oxfadgpm'
+                bus_stop_name = 'Raleigh Park Road'
+            else:
+                bus_stop_id = 'oxfadgdw'
+                bus_stop_name = 'Laburnum Road'
 
-    buses = []
+        (refresh_time, raw_buses) = nextbus.extract_bus_information(bus_stop_id)
 
-    for (bus, destination, due) in raw_buses[:3]:
-        seconds = (due - refresh_time).total_seconds()
+        buses = []
 
-        if seconds == 0:
-            due = 'due'
-        elif seconds < 61:
-            due = '1 min'
-        else:
-            minutes = math.ceil(seconds / 60)
-            due = f'{minutes} mins'
+        for (bus, destination, due_time) in raw_buses[:3]:
+            due = format_due(due_time, refresh_time)
+            buses.append((bus, destination, due))
 
-        buses.append((bus, destination, due))
+        last_updated = refresh_time.strftime('Last updated %H:%M')
 
-    last_updated = refresh_time.strftime('Last updated %H:%M')
+        if console:
+            print_buses(bus_stop_name, buses, last_updated)
+            break
 
-    if console:
-        print_buses(bus_stop_name, buses, last_updated)
-    else:
-        epaper.display(bus_stop_name, buses, last_updated)
+        epaper.display(bus_stop_name, buses, last_updated, change)
+        change = touch.wait_for_touch(60)
+
 
 if __name__ == '__main__':
     main()
