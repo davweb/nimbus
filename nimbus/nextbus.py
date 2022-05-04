@@ -11,6 +11,7 @@ TIMES_URL = 'http://www.nextbuses.mobi/WebView/BusStopSearch/BusStopSearchResult
 PATTERN_DUE = re.compile(r'(.*) DUE$')
 PATTERN_AT = re.compile(r'(.*) at (\d+:\d+)$')
 PATTERN_IN = re.compile(r'(.*) in (\d+) mins?')
+PATTERN_STOP = re.compile(r'Departures for (((\w+)\s+)*\w+)')
 
 PARSER_CONFIG = parser.parserinfo(dayfirst=True)
 
@@ -19,6 +20,17 @@ def _extract_refresh_time(root):
 
     refresh_time_span = root.select('div.content h5 span')[1]
     return parser.parse(refresh_time_span.text, PARSER_CONFIG)
+
+
+def _extract_stop_name(root):
+    """Get the bus stop name"""
+    stop_name_element = root.select('div.content h2')[0]
+    stop_name = stop_name_element.text
+
+    if result := PATTERN_STOP.match(stop_name):
+        stop_name = result[1]
+
+    return stop_name
 
 
 def _extract_bus_arrivals(root):
@@ -68,7 +80,8 @@ def extract_bus_information(bus_stop_id):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, 'html.parser')
 
+    stop_name = _extract_stop_name(soup)
     refresh_time = _extract_refresh_time(soup)
     buses = _extract_bus_arrivals(soup)
 
-    return (refresh_time, buses)
+    return (stop_name, refresh_time, buses)
