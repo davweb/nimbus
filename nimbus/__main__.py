@@ -1,5 +1,6 @@
 """Display bus times on an e-ink screen"""
 
+from datetime import datetime
 import math
 import argparse
 from nimbus import nextbus
@@ -62,13 +63,19 @@ def main():
             bus_stop_index %= len(bus_stops)
             bus_stop_id = bus_stops[bus_stop_index]
 
-        (bus_stop_name, refresh_time, raw_buses) = nextbus.extract_bus_information(bus_stop_id)
+        try:
+            (bus_stop_name, refresh_time, raw_buses) = nextbus.extract_bus_information(bus_stop_id)
 
-        buses = []
+            buses = []
 
-        for (bus, destination, due_time) in raw_buses[:3]:
-            due = format_due(due_time, refresh_time)
-            buses.append((bus, destination, due))
+            for (bus, destination, due_time) in raw_buses[:3]:
+                due = format_due(due_time, refresh_time)
+                buses.append((bus, destination, due))
+
+        except Exception as e:
+            bus_stop_name = 'Error fetching times'
+            buses = []
+            refresh_time = datetime.now()
 
         last_updated = refresh_time.strftime('Last updated %H:%M')
 
