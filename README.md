@@ -1,7 +1,6 @@
 # nimbus
 
-## Description
-This displays bus arrival times on a Raspberry Pi with an e-ink screen.
+Display bus arrival times on a Raspberry Pi with an e-ink screen.
 
 The display shows up to three upcoming buses for a stop. Touching the display cycles through different stops.
 
