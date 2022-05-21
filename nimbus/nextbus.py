@@ -9,6 +9,7 @@ import requests
 
 TIMES_URL = 'http://www.nextbuses.mobi/WebView/BusStopSearch/BusStopSearchResults/{}'
 PATTERN_DUE = re.compile(r'(.*) DUE$')
+PATTERN_DAY = re.compile(r'(.*) at (\d+:\d+) \((\w+)\)$')
 PATTERN_AT = re.compile(r'(.*) at (\d+:\d+)$')
 PATTERN_IN = re.compile(r'(.*) in (\d+) mins?')
 PATTERN_STOP = re.compile(r'Departures for (((\w+)\s+)*\w+)')
@@ -59,6 +60,12 @@ def _extract_bus_arrivals(root):
         elif at_result := PATTERN_AT.match(bus_details):
             destination = at_result[1]
             bus_time = parser.parse(at_result[2], PARSER_CONFIG)
+        elif at_result := PATTERN_DAY.match(bus_details):
+            destination = at_result[1]
+            bus_time = parser.parse(at_result[2], PARSER_CONFIG)
+
+            # Assume buses for later days are only ever for tomorrow
+            bus_time += timedelta(days=1)
         else:
             continue
 

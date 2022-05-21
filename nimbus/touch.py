@@ -29,7 +29,7 @@ def _touch_thread():
 def init():
     """Initialise touch background thread"""
     thread = threading.Thread(target = _touch_thread)
-    thread.setDaemon(True)
+    thread.daemon = True
     thread.start()
 
 

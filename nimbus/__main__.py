@@ -72,7 +72,7 @@ def main():
                 due = format_due(due_time, refresh_time)
                 buses.append((bus, destination, due))
 
-        except Exception as e:
+        except Exception:
             bus_stop_name = 'Error fetching times'
             buses = []
             refresh_time = datetime.now()
