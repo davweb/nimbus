@@ -1,6 +1,7 @@
 """Display bus times on an e-ink screen"""
 
 from datetime import datetime
+from pathlib import Path
 import math
 import argparse
 from nimbus import nextbus
@@ -42,10 +43,13 @@ def main():
     parser = argparse.ArgumentParser(description='Display bus times on an e-ink screen.')
     parser.add_argument('-c', '--console', action='store_true',
         help='Display output on the console')
+    parser.add_argument('-f', '--heartbeat_file', action='store',
+        help='File to touch on every update')
     parser.add_argument('bus_stop_id', nargs='+', help='Bus Stop ID')
 
     args = parser.parse_args()
     console = args.console
+    heartbeat_file = args.heartbeat_file
     bus_stops = args.bus_stop_id
 
     # Conditional import so we can test code on non-RPi systems
@@ -78,6 +82,9 @@ def main():
             refresh_time = datetime.now()
 
         last_updated = refresh_time.strftime('Last updated %H:%M')
+
+        if heartbeat_file:
+            Path(heartbeat_file).touch()
 
         if console:
             print_buses(bus_stop_name, buses, last_updated)
