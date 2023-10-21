@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 import math
 import argparse
-from nimbus import nextbus
+from nimbus import oxontime
 
 
 def print_buses(bus_stop_name, buses, last_updated):
@@ -68,7 +68,7 @@ def main():
             bus_stop_id = bus_stops[bus_stop_index]
 
         try:
-            (bus_stop_name, refresh_time, raw_buses) = nextbus.extract_bus_information(bus_stop_id)
+            (bus_stop_name, refresh_time, raw_buses) = oxontime.extract_bus_information(bus_stop_id)
 
             buses = []
 
