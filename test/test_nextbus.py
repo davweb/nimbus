@@ -19,6 +19,7 @@ def parse_fixture(fixture_file):
 
 class TestParsing(unittest.TestCase):
     """Tests for parsing bus times"""
+
     def setUp(self):
         self.soon = parse_fixture('soon.html')
         self.due = parse_fixture('due.html')
@@ -26,20 +27,17 @@ class TestParsing(unittest.TestCase):
         self.next_day = parse_fixture('next-day.html')
         self.mixed = parse_fixture('mixed.html')
 
-
     def test_extract_stop_name(self):
         """Test extracting stop name"""
 
         result = nextbus._extract_stop_name(self.soon)
         self.assertEqual(result, 'Raleigh Park Road')
 
-
     def test_extract_refresh_time(self):
         """Test extracting refresh time"""
 
         result = nextbus._extract_refresh_time(self.soon)
         self.assertEqual(result, datetime.datetime(2022, 5, 16, 7, 55))
-
 
     def test_extract_bus_arrivals_bus(self):
         """Test extracting upcoming bus name"""
@@ -48,7 +46,6 @@ class TestParsing(unittest.TestCase):
         bus = results[0][0]
         self.assertEqual(bus, 'U1')
 
-
     def test_extract_bus_arrivals_destination(self):
         """Test extracting upcoming bus destination"""
 
@@ -56,14 +53,12 @@ class TestParsing(unittest.TestCase):
         destination = results[0][1]
         self.assertEqual(destination, 'Wheatley')
 
-
     def test_extract_bus_arrivals_soon(self):
         """Test extracting upcoming bus time when it's shown in minutes"""
 
         results = nextbus._extract_bus_arrivals(self.soon)
         time = results[0][2]
         self.assertEqual(time, datetime.datetime(2022, 5, 16, 8, 5))
-
 
     def test_extract_bus_arrivals_due(self):
         """Test extracting upcoming bus time when it's shown as due"""
@@ -73,22 +68,21 @@ class TestParsing(unittest.TestCase):
         time = results[0][2]
         self.assertEqual(time, refresh_time)
 
-
     def test_extract_bus_arrivals_later(self):
         """Test extracting upcoming bus time when it's shown as a time"""
 
         results = nextbus._extract_bus_arrivals(self.later)
         time = results[1][2]
-        self.assertEqual(time, datetime.datetime(2022, 5, 21, 7, 36))
-
+        self.assertEqual(time.time(), datetime.time(7, 36))
+        self.assertEqual(time.date(), datetime.date.today())
 
     def test_extract_bus_arrivals_next_day(self):
         """Test extracting upcoming bus time when it's shown as the next day"""
 
         results = nextbus._extract_bus_arrivals(self.next_day)
         time = results[0][2]
-        self.assertEqual(time, datetime.datetime(2022, 5, 22, 6, 36))
-
+        self.assertEqual(time.time(), datetime.time(6, 36))
+        self.assertEqual(time.date(), datetime.date.today() + datetime.timedelta(days=1))
 
     def test_extract_bus_arrivals(self):
         """Test extracting multiple bus times is done correctly"""
@@ -96,6 +90,7 @@ class TestParsing(unittest.TestCase):
         results = nextbus._extract_bus_arrivals(self.mixed)
 
         self.assertEqual(len(results), 4)
+
 
 if __name__ == '__main__':
     unittest.main()
