@@ -1,8 +1,10 @@
+autopep8
 bs4
+numpy
+Pillow
+pylint
 python-dateutil
 requests
 RPi.GPIO
 smbus
 spidev
-numpy
-Pillow

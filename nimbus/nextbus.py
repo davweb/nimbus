@@ -16,6 +16,7 @@ PATTERN_STOP = re.compile(r'Departures for (((\w+)\s+)*\w+)')
 
 PARSER_CONFIG = parser.parserinfo(dayfirst=True)
 
+
 def _extract_refresh_time(root):
     """Extract the refresh time from a bus stop page"""
 
@@ -64,7 +65,7 @@ def _extract_bus_arrivals(root):
             destination = at_result[1]
             bus_time = parser.parse(at_result[2], PARSER_CONFIG)
 
-            # Assume buses for later days are only ever for tomorrow
+            #  Assume buses for later days are only ever for tomorrow
             bus_time += timedelta(days=1)
         else:
             continue
@@ -84,7 +85,7 @@ def extract_bus_information(bus_stop_id):
     """Download bus time information page and return the data"""
 
     url = TIMES_URL.format(bus_stop_id)
-    page = requests.get(url)
+    page = requests.get(url, timeout=60)
     soup = BeautifulSoup(page.content, 'html.parser')
 
     stop_name = _extract_stop_name(soup)

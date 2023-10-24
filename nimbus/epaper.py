@@ -1,6 +1,6 @@
 """Write the bus information to the e-paper screen"""
 
-from PIL import Image,ImageDraw,ImageFont
+from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import Transpose
 from TP_lib import epd2in13_V2
 
@@ -15,12 +15,13 @@ COLOUR_WHITE = 255
 DISPLAY = epd2in13_V2.EPD_2IN13_V2()
 DISPLAY.init(DISPLAY.FULL_UPDATE)
 
-# Width and height reverse to rotate screen
+#  Width and height reverse to rotate screen
 WIDTH = DISPLAY.height
 HEIGHT = DISPLAY.width
 
 COUNT_FILE = '/tmp/epaper-refresh-count'
 refresh_count = 0
+
 
 def display(stop_name, buses, last_updated, force_full_update):
     """Display bus information to the screen"""
@@ -29,11 +30,11 @@ def display(stop_name, buses, last_updated, force_full_update):
     image = Image.new('1', (WIDTH, HEIGHT), COLOUR_WHITE)
 
     draw = ImageDraw.Draw(image)
-    draw.text((2, 0), stop_name, font = FONT_BOLD_24, fill = COLOUR_BLACK)
+    draw.text((2, 0), stop_name, font=FONT_BOLD_24, fill=COLOUR_BLACK)
     (_, current_y) = FONT_BOLD_24.getsize(stop_name)
     current_y += 2
 
-    draw.line((0, current_y, WIDTH, current_y), fill = COLOUR_BLACK)
+    draw.line((0, current_y, WIDTH, current_y), fill=COLOUR_BLACK)
 
     current_y += 2
     destination_x = 0
@@ -47,17 +48,17 @@ def display(stop_name, buses, last_updated, force_full_update):
 
     for (bus, destination, time) in buses:
         draw.text((2, current_y), bus,
-            font = FONT_BOLD_20, fill = COLOUR_BLACK)
+                  font=FONT_BOLD_20, fill=COLOUR_BLACK)
         draw.text((destination_x, current_y + destination_offset), destination,
-            font = FONT_CONDENSED_14, fill = COLOUR_BLACK)
+                  font=FONT_CONDENSED_14, fill=COLOUR_BLACK)
         (text_width, text_height) = FONT_BOLD_20.getsize(time)
         draw.text((WIDTH - text_width, current_y), time,
-            font = FONT_BOLD_20, fill = COLOUR_BLACK)
+                  font=FONT_BOLD_20, fill=COLOUR_BLACK)
         current_y += text_height + 3
 
     (text_width, text_height) = FONT_REGULAR_12.getsize(last_updated)
     draw.text((WIDTH - text_width, HEIGHT - text_height), last_updated,
-        font = FONT_REGULAR_12, fill = COLOUR_BLACK)
+              font=FONT_REGULAR_12, fill=COLOUR_BLACK)
 
     image = image.transpose(Transpose.ROTATE_180)
     display_image = DISPLAY.getbuffer(image)

@@ -2,7 +2,7 @@
 
 import time
 import threading
-# Import so GPIO is initialised
+#  Import so GPIO is initialised
 from nimbus import epaper
 
 from TP_lib import gt1151
@@ -13,6 +13,7 @@ GT_Dev = gt1151.GT_Development()
 GT_Old = gt1151.GT_Development()
 
 SLEEP_TIME = 0.01
+
 
 def _touch_thread():
     """Poll for touches"""
@@ -26,9 +27,10 @@ def _touch_thread():
         # Quick sleep to stop this using all the CPU
         time.sleep(SLEEP_TIME)
 
+
 def init():
     """Initialise touch background thread"""
-    thread = threading.Thread(target = _touch_thread)
+    thread = threading.Thread(target=_touch_thread)
     thread.daemon = True
     thread.start()
 
