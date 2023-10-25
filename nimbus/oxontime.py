@@ -23,13 +23,7 @@ def _bus_stop_name(bus_stop_id):
 def _bus_details(bus):
     route = bus['route_code']
     destination = bus['destination']
-
-    departure_time = bus['expected_arrival_time']
-
-    if not departure_time:
-        departure_time = bus['aimed_arrival_time']
-
-    departure_time = parser.parse(departure_time)
+    departure_time = parser.parse(bus['expected_arrival_time'] or bus['aimed_arrival_time'])
 
     return (route, destination, departure_time)
 
