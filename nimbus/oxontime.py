@@ -1,23 +1,24 @@
 """Fetch bus time by scraping https://oxontime.com/"""
 
+from functools import cache
 import json
 import requests
 from dateutil import parser
 
 LOCATIONS_URL = 'https://oxontime.com/pwi/getShareLocations'
 TIMES_URL = 'https://oxontime.com/pwi/departureBoard/{}'
-STOPS = None
 
 
+@cache
 def _bus_stop_name(bus_stop_id):
-    global STOPS
+    page = requests.get(LOCATIONS_URL, timeout=60)
+    locations = json.loads(page.content)
 
-    if STOPS is None:
-        page = requests.get(LOCATIONS_URL, timeout=60)
-        locations = json.loads(page.content)
-        STOPS = {location['location_code']: location['location_name'] for location in locations}
+    for location in locations:
+        if location['location_code'] == bus_stop_id:
+            return location['location_name']
 
-    return STOPS[bus_stop_id]
+    return f'Bus Stop {bus_stop_id}'
 
 
 def _bus_details(bus):

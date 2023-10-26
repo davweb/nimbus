@@ -1,4 +1,5 @@
 """Write the bus information to the e-paper screen"""
+# pylint: disable=no-member
 
 from PIL import Image, ImageDraw, ImageFont
 from PIL.Image import Transpose
@@ -19,7 +20,6 @@ DISPLAY.init(DISPLAY.FULL_UPDATE)
 WIDTH = DISPLAY.height
 HEIGHT = DISPLAY.width
 
-COUNT_FILE = '/tmp/epaper-refresh-count'
 refresh_count = 0
 
 
