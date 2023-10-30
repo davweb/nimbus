@@ -14,7 +14,9 @@ fi
 
 # Install standard Python dependencies
 source .venv/bin/activate
-pip install -r requirements.txt
+pip install pip-tools
+pip-compile
+pip-sync
 
 # Install Waveshare Python depedencies
 if [ -d TP_lib ]
