@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Install required packages
-sudo apt-get install -y gcc python3-dev python3-venv
+sudo apt-get install -y gcc python3-dev python3-venv libjpeg-dev
 
 # Create Virtual Environment
 if [ -d .venv ]
@@ -14,8 +14,7 @@ fi
 
 # Install standard Python dependencies
 source .venv/bin/activate
-pip install pip-tools
-pip-compile
+pip install --upgrade pip pip-tools
 pip-sync
 
 # Install Waveshare Python depedencies
@@ -29,20 +28,15 @@ else
 fi
 
 # Install fonts
-if [ -d fonts ]
+if [ -f fonts/Roboto-Regular.ttf ]
 then
     echo Fonts already downloaded.
 else
     mkdir fonts
     cd fonts
-
-    for FONT in Roboto Roboto+Condensed
-    do
-        ZIP=/tmp/${FONT}.zip
-        wget --output-document=${ZIP} https://fonts.google.com/download?family=${FONT}
-        unzip ${ZIP} "*.ttf"
-        rm ${ZIP}
-    done
-
+    ZIP=/tmp/roboto.zip
+    wget --output-document=${ZIP} https://github.com/googlefonts/roboto-2/releases/download/v2.138/roboto-android.zip
+    unzip ${ZIP} Roboto-Regular.ttf Roboto-Bold.ttf RobotoCondensed-Regular.ttf
+    rm ${ZIP}
     cd ..
 fi

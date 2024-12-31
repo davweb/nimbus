@@ -32,42 +32,38 @@ Install `git`and then clone this repository:
 sudo apt-get install -y git
 git clone https://github.com/davweb/nimbus.git
 ```
-   
+
 Run the set up script to install the required dependencies:
 
 ```
 cd nimbus
 ./setup.sh
-```   
-   
+```
+
 ## Running
-Firstly get the IDs of the bus stops you want to display from [here](https://bus.traveluk.info/index.php/stop-finder).  The IDs will be a list of letters like `oxfamjma`.
+Firstly get the IDs of the bus stops you want to display from [here](https://bus.traveluk.info/index.php/stop-finder).  The IDs will be a list of letters and numbers like `340000006R1`.
 
 Run the module passing in bus stop IDs as arguments:
 
 ```
 source .venv/bin/activate
-python -m nimbus oxfamjma oxfgwajm
+python -m nimbus 340000006R1 340000006R2
 ```
 
 The script runs continuously as it needs to monitor the touch screen.
 
-The easiest way to run at boot is to schedule a script that sources the virtual environment and runs the script.  For example, a script would look like:
+The easiest way to run at boot is to schedule a script that sources the virtual environment and runs the Python script.  There is an example in the repository. There is also a watchdog script that will reboot the Raspberry Pi if the bus times script fails.
+
+Schedule them with `cron` with the following `crontab` entries:
 
 ```
-#!/usr/bin/bash
-
-cd /home/pi/nimbus
-source .venv/bin/activate
-python -m nimbus oxfamjma oxfgwajm >nimbus.out 2>&1
+@reboot /home/pi/run-nimbus.sh
+* * * * * /home/pi/nimbus/watchdog.sh
 ```
 
-Schedule it with `cron` with the following `crontab` entry:
+You will need to edit the paths in the scripts and crontab entries if you have not installed to `/home/pi/nimbus`.
 
-```@reboot /home/pi/run-nimbus.sh```
 
-   
-   
 
 
 

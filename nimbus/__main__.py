@@ -5,7 +5,7 @@ from pathlib import Path
 import math
 import argparse
 from nimbus import oxontime
-
+from nimbus import bustimesorg
 
 def print_buses(bus_stop_name, buses, last_updated):
     """Send bus information to standard output"""
@@ -45,17 +45,22 @@ def parse_args():
                         help='Display output on the console')
     parser.add_argument('-f', '--heartbeat_file', action='store',
                         help='File to touch on every update')
+    parser.add_argument('-o', '--oxontime', action='store_true',
+                        help='Use oxontime.com instead of bustimes.org for bus times')
     parser.add_argument('bus_stop_id', nargs='+', help='Bus Stop ID')
 
     args = parser.parse_args()
-    return args.console, args.heartbeat_file, args.bus_stop_id
+    return args.console, args.heartbeat_file, args.oxontime, args.bus_stop_id
 
 
-def fetch_bus_times(bus_stop_id):
+def fetch_bus_times(bus_stop_id, use_oxontime):
     """Fetch the bus times"""
 
     try:
-        (bus_stop_name, refresh_time, raw_buses) = oxontime.extract_bus_information(bus_stop_id)
+        if use_oxontime:
+            (bus_stop_name, refresh_time, raw_buses) = oxontime.extract_bus_information(bus_stop_id)
+        else:
+            (bus_stop_name, refresh_time, raw_buses) = bustimesorg.extract_bus_information(bus_stop_id)
 
         buses = []
 
@@ -74,7 +79,7 @@ def fetch_bus_times(bus_stop_id):
 def main():
     """Entrypoint function"""
 
-    console, heartbeat_file, bus_stops = parse_args()
+    console, heartbeat_file, use_oxontime, bus_stops = parse_args()
 
     # Conditional import so we can test code on non-RPi systems
     if not console:
@@ -91,7 +96,7 @@ def main():
             bus_stop_index %= len(bus_stops)
             bus_stop_id = bus_stops[bus_stop_index]
 
-        (bus_stop_name, buses, refresh_time) = fetch_bus_times(bus_stop_id)
+        (bus_stop_name, buses, refresh_time) = fetch_bus_times(bus_stop_id, use_oxontime)
         last_updated = refresh_time.strftime('Last updated %H:%M')
 
         if heartbeat_file:

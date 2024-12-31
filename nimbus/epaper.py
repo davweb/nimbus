@@ -23,6 +23,12 @@ HEIGHT = DISPLAY.width
 refresh_count = 0
 
 
+def getsize(font, text):
+    """Return the size of the text"""
+    left, top, right, bottom = font.getbbox(text)
+    return right - left, bottom - top
+
+
 def display(stop_name, buses, last_updated, force_full_update):
     """Display bus information to the screen"""
 
@@ -31,7 +37,7 @@ def display(stop_name, buses, last_updated, force_full_update):
 
     draw = ImageDraw.Draw(image)
     draw.text((2, 0), stop_name, font=FONT_BOLD_24, fill=COLOUR_BLACK)
-    (_, current_y) = FONT_BOLD_24.getsize(stop_name)
+    (_, current_y) = getsize(FONT_BOLD_24, stop_name)
     current_y += 2
 
     draw.line((0, current_y, WIDTH, current_y), fill=COLOUR_BLACK)
@@ -40,23 +46,23 @@ def display(stop_name, buses, last_updated, force_full_update):
     destination_x = 0
 
     for (bus, _, _) in buses:
-        (text_width, text_height) = FONT_BOLD_20.getsize(bus)
+        (text_width, text_height) = getsize(FONT_BOLD_20, bus)
         destination_x = max(destination_x, text_width)
 
     destination_x += 4
-    destination_offset = FONT_BOLD_20.getsize("A")[1] - FONT_CONDENSED_14.getsize("A")[1]
+    destination_offset = getsize(FONT_BOLD_20, "A")[1] - getsize(FONT_CONDENSED_14, "A")[1]
 
     for (bus, destination, time) in buses:
         draw.text((2, current_y), bus,
                   font=FONT_BOLD_20, fill=COLOUR_BLACK)
         draw.text((destination_x, current_y + destination_offset), destination,
                   font=FONT_CONDENSED_14, fill=COLOUR_BLACK)
-        (text_width, text_height) = FONT_BOLD_20.getsize(time)
+        (text_width, text_height) = getsize(FONT_BOLD_20, time)
         draw.text((WIDTH - text_width, current_y), time,
                   font=FONT_BOLD_20, fill=COLOUR_BLACK)
         current_y += text_height + 3
 
-    (text_width, text_height) = FONT_REGULAR_12.getsize(last_updated)
+    (text_width, text_height) = getsize(FONT_REGULAR_12, last_updated)
     draw.text((WIDTH - text_width, HEIGHT - text_height), last_updated,
               font=FONT_REGULAR_12, fill=COLOUR_BLACK)
 
