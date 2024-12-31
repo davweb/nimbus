@@ -52,12 +52,12 @@ python -m nimbus 340000006R1 340000006R2
 
 The script runs continuously as it needs to monitor the touch screen.
 
-The easiest way to run at boot is to schedule a script that sources the virtual environment and runs the Python script.  There is an example in the repository. There is also a watchdog script that will reboot the Raspberry Pi if the bus times script fails.
+The easiest way to run at boot is to schedule a script that sources the virtual environment and runs the Python script.  There is an example in the repository called `run-nimbus.sh`.  You will need to edit it to change the bus stop IDs. There is also a watchdog script that will reboot the Raspberry Pi if the bus times script fails.
 
 Schedule them with `cron` with the following `crontab` entries:
 
 ```
-@reboot /home/pi/run-nimbus.sh
+@reboot /home/pi/nimbus/run-nimbus.sh
 * * * * * /home/pi/nimbus/watchdog.sh
 ```
 
