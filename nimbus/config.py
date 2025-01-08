@@ -74,7 +74,7 @@ class Config:
         if self._args.source:
             return self._args.source
 
-        return self._file.get('source', 'nextbuses')
+        return self._file.get('source', 'bustimes')
 
     @property
     def bus_stops(self):
