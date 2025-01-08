@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HEARTBEAT_FILE=/tmp/heartbeat
-AGE_MINUTES=3
+AGE_MINUTES=5
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 if test -z $(find ${HEARTBEAT_FILE} -mmin -${AGE_MINUTES})

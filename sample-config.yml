@@ -1,0 +1,19 @@
+# The list of bus stops to display times for
+bus_stop_id:
+- 340000006R1
+- 340000006R2
+
+# The source for the bus times.  One of:
+# nextbuses - https://www.nextbuses.mobi
+# bustimes - https://bustimes.org
+# oxontime - https://oxontime.com (Oxfordshire only more accurate)
+source: nextbuses
+
+# A heartbeat file to update every time the display is updated
+# This can be used to monitor the display is still running
+heartbeat_file: /tmp/heartbeat
+
+# The version of the Waveshare 2.13inch display
+# This will be 2, 3 or 4
+display_version: 2
+

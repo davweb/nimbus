@@ -4,14 +4,15 @@ from functools import cache
 import json
 import requests
 from dateutil import parser
+from .config import CONFIG
 
-LOCATIONS_URL = 'https://oxontime.com/pwi/getShareLocations'
-TIMES_URL = 'https://oxontime.com/pwi/departureBoard/{}'
+OXONTIME_LOCATIONS_URL = 'https://oxontime.com/pwi/getShareLocations'
+OXONTIME_TIMES_URL = 'https://oxontime.com/pwi/departureBoard/{}'
 
 
 @cache
 def _bus_stop_name(bus_stop_id):
-    page = requests.get(LOCATIONS_URL, timeout=60)
+    page = requests.get(OXONTIME_LOCATIONS_URL, timeout=60)
     locations = json.loads(page.content)
 
     for location in locations:
@@ -32,8 +33,8 @@ def _bus_details(bus):
 def extract_bus_information(bus_stop_id):
     """Download bus time information page and return the data"""
 
-    url = TIMES_URL.format(bus_stop_id)
-    page = requests.get(url, timeout=60)
+    url = OXONTIME_TIMES_URL.format(bus_stop_id)
+    page = requests.get(url, timeout=CONFIG.request_timeout)
     data = json.loads(page.content)[bus_stop_id]
 
     stop_name = _bus_stop_name(bus_stop_id)

@@ -3,7 +3,7 @@
 import time
 import threading
 #  Import so GPIO is initialised
-from nimbus import epaper
+from nimbus import epaper  # pylint: disable=unused-import
 
 from TP_lib import gt1151
 

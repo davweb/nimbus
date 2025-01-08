@@ -42,6 +42,8 @@ pylint==3.3.3
     # via -r requirements.in
 python-dateutil==2.9.0.post0
     # via -r requirements.in
+pyyaml==6.0.2
+    # via -r requirements.in
 requests==2.32.3
     # via -r requirements.in
 rpi-gpio==0.7.1

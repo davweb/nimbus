@@ -3,19 +3,22 @@
 from datetime import datetime
 from pathlib import Path
 import math
-import argparse
-from nimbus import oxontime
-from nimbus import bustimesorg
+from .config import CONFIG
 
-def print_buses(bus_stop_name, buses, last_updated):
-    """Send bus information to standard output"""
+if CONFIG.console:
+    from . import console as device
+else:
+    from . import device
 
-    print(bus_stop_name)
-
-    for (bus, destination, due) in buses:
-        print(bus, destination, due)
-
-    print(last_updated)
+match CONFIG.source:
+    case 'oxontime':
+        from . import oxontime as bustimes
+    case 'nextbuses':
+        from . import nextbuses as bustimes
+    case 'bustimes':
+        from . import bustimes
+    case unknown:
+        raise ValueError(f'Unknown source for bus times: {unknown}')
 
 
 def format_due(due_time, refresh_time):
@@ -23,7 +26,7 @@ def format_due(due_time, refresh_time):
 
     seconds = (due_time - refresh_time).total_seconds()
 
-    if seconds == 0:
+    if seconds <= 0:
         return 'due'
 
     if seconds < 61:
@@ -37,38 +40,18 @@ def format_due(due_time, refresh_time):
     return due_time.strftime('%-H:%M')
 
 
-def parse_args():
-    """Parse the command line arguments"""
-
-    parser = argparse.ArgumentParser(description='Display bus times on an e-ink screen.')
-    parser.add_argument('-c', '--console', action='store_true',
-                        help='Display output on the console')
-    parser.add_argument('-f', '--heartbeat_file', action='store',
-                        help='File to touch on every update')
-    parser.add_argument('-o', '--oxontime', action='store_true',
-                        help='Use oxontime.com instead of bustimes.org for bus times')
-    parser.add_argument('bus_stop_id', nargs='+', help='Bus Stop ID')
-
-    args = parser.parse_args()
-    return args.console, args.heartbeat_file, args.oxontime, args.bus_stop_id
-
-
-def fetch_bus_times(bus_stop_id, use_oxontime):
+def fetch_bus_times(bus_stop_id):
     """Fetch the bus times"""
 
     try:
-        if use_oxontime:
-            (bus_stop_name, refresh_time, raw_buses) = oxontime.extract_bus_information(bus_stop_id)
-        else:
-            (bus_stop_name, refresh_time, raw_buses) = bustimesorg.extract_bus_information(bus_stop_id)
-
+        (bus_stop_name, refresh_time, raw_buses) = bustimes.extract_bus_information(bus_stop_id)
         buses = []
 
         for (bus, destination, due_time) in raw_buses[:3]:
             due = format_due(due_time, refresh_time)
             buses.append((bus, destination, due))
 
-    except BaseException:
+    except BaseException:  # pylint: disable=broad-exception-caught
         bus_stop_name = 'Error fetching times'
         buses = []
         refresh_time = datetime.now()
@@ -79,35 +62,26 @@ def fetch_bus_times(bus_stop_id, use_oxontime):
 def main():
     """Entrypoint function"""
 
-    console, heartbeat_file, use_oxontime, bus_stops = parse_args()
+    device.init()
 
-    # Conditional import so we can test code on non-RPi systems
-    if not console:
-        from nimbus import epaper
-        from nimbus import touch
-        touch.init()
-
-    change = True
-    bus_stop_index = -1
+    change = False
+    bus_stop_index = 0
+    bus_stop_id = CONFIG.bus_stops[bus_stop_index]
 
     while True:
-        if change:
-            bus_stop_index += 1
-            bus_stop_index %= len(bus_stops)
-            bus_stop_id = bus_stops[bus_stop_index]
-
-        (bus_stop_name, buses, refresh_time) = fetch_bus_times(bus_stop_id, use_oxontime)
+        (bus_stop_name, buses, refresh_time) = fetch_bus_times(bus_stop_id)
         last_updated = refresh_time.strftime('Last updated %H:%M')
 
-        if heartbeat_file:
-            Path(heartbeat_file).touch()
+        if CONFIG.heartbeat_file:
+            Path(CONFIG.heartbeat_file).touch()
 
-        if console:
-            print_buses(bus_stop_name, buses, last_updated)
-            break
+        device.display(bus_stop_name, buses, last_updated, change)
+        change = device.wait_for_press(60)
 
-        epaper.display(bus_stop_name, buses, last_updated, change)
-        change = touch.wait_for_touch(60)
+        if change:
+            bus_stop_index += 1
+            bus_stop_index %= len(CONFIG.bus_stops)
+            bus_stop_id = CONFIG.bus_stops[bus_stop_index]
 
 
 if __name__ == '__main__':

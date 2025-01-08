@@ -5,9 +5,10 @@ import re
 from bs4 import BeautifulSoup
 from dateutil import parser
 import requests
+from .config import CONFIG
 
+NEXTBUSES_TIMES_URL = 'http://www.nextbuses.mobi/WebView/BusStopSearch/BusStopSearchResults/{}'
 
-TIMES_URL = 'http://www.nextbuses.mobi/WebView/BusStopSearch/BusStopSearchResults/{}'
 PATTERN_DUE = re.compile(r'(.*) DUE$')
 PATTERN_DAY = re.compile(r'(.*) at (\d+:\d+) \((\w+)\)$')
 PATTERN_AT = re.compile(r'(.*) at (\d+:\d+)$')
@@ -84,8 +85,8 @@ def _extract_bus_arrivals(root):
 def extract_bus_information(bus_stop_id):
     """Download bus time information page and return the data"""
 
-    url = TIMES_URL.format(bus_stop_id)
-    page = requests.get(url, timeout=60)
+    url = NEXTBUSES_TIMES_URL.format(bus_stop_id)
+    page = requests.get(url, timeout=CONFIG.request_timeout)
     soup = BeautifulSoup(page.content, 'html.parser')
 
     stop_name = _extract_stop_name(soup)
