@@ -43,6 +43,12 @@ fi
 
 clear
 
+# Enable SPI
+sudo raspi-config nonint do_spi 0
+
+# Enable I2C
+sudo raspi-config nonint do_i2c 0
+
 # Install other required packages
 sudo apt-get install -q -y gcc python3-dev python3-venv libjpeg-dev
 
