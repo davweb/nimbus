@@ -63,15 +63,18 @@ def display(stop_name, buses, last_updated, force_full_update):
     destination_x += 5
     destination_offset = _get_size(FONT_BOLD_20, "A")[1] - _get_size(FONT_CONDENSED_14, "A")[1]
 
-    for (bus, destination, time) in buses:
-        draw.text((2, current_y), bus,
-                  font=FONT_BOLD_20, fill=COLOUR_BLACK)
-        draw.text((destination_x, current_y + destination_offset), destination,
-                  font=FONT_CONDENSED_14, fill=COLOUR_BLACK)
-        (text_width, text_height) = _get_size(FONT_BOLD_20, time)
-        draw.text((WIDTH - text_width, current_y), time,
-                  font=FONT_BOLD_20, fill=COLOUR_BLACK)
-        current_y += text_height + 3
+    if not buses:
+        draw.text((2, current_y), 'No buses expected', font=FONT_BOLD_20, fill=COLOUR_BLACK)
+    else:
+        for (bus, destination, time) in buses:
+            draw.text((2, current_y), bus,
+                    font=FONT_BOLD_20, fill=COLOUR_BLACK)
+            draw.text((destination_x, current_y + destination_offset), destination,
+                    font=FONT_CONDENSED_14, fill=COLOUR_BLACK)
+            (text_width, text_height) = _get_size(FONT_BOLD_20, time)
+            draw.text((WIDTH - text_width, current_y), time,
+                    font=FONT_BOLD_20, fill=COLOUR_BLACK)
+            current_y += text_height + 3
 
     (text_width, text_height) = _get_size(FONT_REGULAR_12, last_updated)
     draw.text((WIDTH - text_width, HEIGHT - text_height), last_updated,

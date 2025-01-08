@@ -13,8 +13,11 @@ def display(bus_stop_name, buses, last_updated, _):
 
     print(bus_stop_name)
 
-    for (bus, destination, due) in buses:
-        print(bus, destination, due)
+    if not buses:
+        print('No buses expected')
+    else:
+        for (bus, destination, due) in buses:
+            print(bus, destination, due)
 
     print(last_updated)
 
