@@ -14,55 +14,48 @@ This is inteded for use with:
 
 The [e-Paper HAT is available with a case from The Pi Hut](https://thepihut.com/products/2-13-touchscreen-e-paper-display-case-for-raspberry-pi-zero).
 
-## Set-Up
 
-Image the SD Card for the Raspberry Pi Zero 2 W with *Rasperry Pi OS Lite (64-bit)* using the [Raspberry Pi Imager](https://www.raspberrypi.com/software/).  Use the settings in the imager to set hostname, enable SSH and specifiy the wi-fi password.
+## Bus Time Data
+Nimbus gets it bus time data by scraping one of three websites:
 
-One the Pi has booted, login via SSH and configure the Raspberry PI to work with the e-Paper HAT:
+| Website | Option | Notes |
+| ------- | ------ | ----- |
+| [Nextbuses](https://nextbuses.mobi/) | `nextbuses` | |
+| [bustimes.org](https://bustimes.org/) | `bustimes` | |
+| [Oxontime](https://oxontime.com/) | `oxontime` | Oxfordshire only |
 
-* Run `sudo raspi-config`
-* Select `Interface Options` → `SPI` and select `Yes` to enable.
-* Select `Interface Options` → `I2C` and select `Yes` to enable.
-* Use `Finish` to exit the configuration tool.
-* Reboot.
+Select the site you wish you use during set-up.
 
-Install `git`and then clone this repository:
+## Automated Set-Up
+
+Firstly get the IDs of the bus stops you want to display from [here](https://bus.traveluk.info/index.php/stop-finder).  The IDs will be a list of letters and numbers like `340000006R1`.
+
+Image the SD Card for the Raspberry Pi Zero 2 W with *Rasperry Pi OS Lite (64-bit)* using the [Raspberry Pi Imager](https://www.raspberrypi.com/software/).  Use the settings in the imager to set hostname, enable SSH and specify the wi-fi password.
+
+One the Pi has booted, login via SSH.  Install `git`and then clone this repository:
 
 ```
 sudo apt-get install -y git
 git clone https://github.com/davweb/nimbus.git
 ```
 
-Run the set up script to install the required dependencies:
-
+Run the set up script.
 ```
 cd nimbus
 ./setup.sh
 ```
 
-## Running
-Firstly get the IDs of the bus stops you want to display from [here](https://bus.traveluk.info/index.php/stop-finder).  The IDs will be a list of letters and numbers like `340000006R1`.
+Enter the required details when prompted.  The script will configure the Raspberry Pi, install the required dependencies, create a configuration file and schedule Nimbus to run using `cron`.
 
-Run the module passing in bus stop IDs as arguments:
+## Options
 
-```
-source .venv/bin/activate
-python -m nimbus 340000006R1 340000006R2
-```
+Nimbus is configured either through a YAML configuration file or command line options.
 
-The script runs continuously as it needs to monitor the touch screen.
-
-The easiest way to run at boot is to schedule a script that sources the virtual environment and runs the Python script.  There is an example in the repository called `run-nimbus.sh`.  You will need to edit it to change the bus stop IDs. There is also a watchdog script that will reboot the Raspberry Pi if the bus times script fails.
-
-Schedule them with `cron` with the following `crontab` entries:
+Look at `sample-config.yml` for the configuration file format or run the following command to see the command line options:
 
 ```
-@reboot /home/pi/nimbus/run-nimbus.sh
-* * * * * /home/pi/nimbus/watchdog.sh
+python -m nimbus --help
 ```
-
-You will need to edit the paths in the scripts and crontab entries if you have not installed to `/home/pi/nimbus`.
-
 
 
 
