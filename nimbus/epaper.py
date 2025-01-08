@@ -31,19 +31,19 @@ DISPLAY.init(DISPLAY.FULL_UPDATE)
 WIDTH = DISPLAY.height
 HEIGHT = DISPLAY.width
 
-refresh_count = 0  #  pylint: disable=invalid-name
+refresh_count = 0 # pylint: disable=invalid-name
 
 
 def _get_size(font, text):
     """Return the size of the text"""
-    left, top, right, bottom = font.getbbox(text)
-    return right - left, bottom - top
+    left, _, right, bottom = font.getbbox(text)
+    return right - left, bottom
 
 
 def display(stop_name, buses, last_updated, force_full_update):
     """Display bus information to the screen"""
 
-    global refresh_count  # pylint: disable=global-statement
+    global refresh_count # pylint: disable=global-statement
     image = Image.new('1', (WIDTH, HEIGHT), COLOUR_WHITE)
 
     draw = ImageDraw.Draw(image)
@@ -60,7 +60,7 @@ def display(stop_name, buses, last_updated, force_full_update):
         (text_width, text_height) = _get_size(FONT_BOLD_20, bus)
         destination_x = max(destination_x, text_width)
 
-    destination_x += 4
+    destination_x += 5
     destination_offset = _get_size(FONT_BOLD_20, "A")[1] - _get_size(FONT_CONDENSED_14, "A")[1]
 
     for (bus, destination, time) in buses:
