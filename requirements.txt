@@ -4,47 +4,47 @@
 #
 #    pip-compile requirements.in
 #
-astroid==3.3.8
+astroid==3.3.10
     # via pylint
-autopep8==2.3.1
+autopep8==2.3.2
     # via -r requirements.in
-beautifulsoup4==4.12.3
+beautifulsoup4==4.13.4
     # via bs4
 bs4==0.0.2
     # via -r requirements.in
-certifi==2024.12.14
+certifi==2025.6.15
     # via requests
-charset-normalizer==3.4.1
+charset-normalizer==3.4.2
     # via requests
 colorzero==2.0
     # via gpiozero
-dill==0.3.9
+dill==0.4.0
     # via pylint
 gpiozero==2.0.1
     # via -r requirements.in
 idna==3.10
     # via requests
-isort==5.13.2
+isort==6.0.1
     # via pylint
 lgpio==0.2.2.0
     # via -r requirements.in
 mccabe==0.7.0
     # via pylint
-numpy==2.2.1
+numpy==2.3.0
     # via -r requirements.in
-pillow==11.0.0
+pillow==11.2.1
     # via -r requirements.in
-platformdirs==4.3.6
+platformdirs==4.3.8
     # via pylint
-pycodestyle==2.12.1
+pycodestyle==2.13.0
     # via autopep8
-pylint==3.3.3
+pylint==3.3.7
     # via -r requirements.in
 python-dateutil==2.9.0.post0
     # via -r requirements.in
 pyyaml==6.0.2
     # via -r requirements.in
-requests==2.32.3
+requests==2.32.4
     # via -r requirements.in
 rpi-gpio==0.7.1
     # via -r requirements.in
@@ -52,13 +52,15 @@ six==1.17.0
     # via python-dateutil
 smbus==1.1.post2
     # via -r requirements.in
-soupsieve==2.6
+soupsieve==2.7
     # via beautifulsoup4
-spidev==3.6
+spidev==3.7
     # via -r requirements.in
-tomlkit==0.13.2
+tomlkit==0.13.3
     # via pylint
-urllib3==2.3.0
+typing-extensions==4.14.0
+    # via beautifulsoup4
+urllib3==2.4.0
     # via requests
 
 # The following packages are considered to be unsafe in a requirements file:

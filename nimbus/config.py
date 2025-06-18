@@ -1,5 +1,5 @@
 
-"""Merge deskbot configuration from the command line and config files"""
+"""Merge configuration from the command line and config files"""
 
 import argparse
 from pathlib import Path
