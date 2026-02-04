@@ -50,21 +50,15 @@ sudo raspi-config nonint do_spi 0
 sudo raspi-config nonint do_i2c 0
 
 # Install other required packages
-sudo apt-get install -q -y gcc python3-dev python3-venv libjpeg-dev
+sudo apt-get install -q -y gcc git liblgpio-dev libjpeg-dev python3-dev swig
 
-# Create Virtual Environment
-if [ -d .venv ]
-then
-    echo Virtual Environment already exists.
-else
-    sudo apt-get install -y
-    python -m venv --prompt nimbus .venv
-fi
+# Install uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+source $HOME/.local/bin/env
 
-# Install standard Python dependencies
+# Create Virtual Environment and install dependencies
+uv sync --extra raspberrypi
 source .venv/bin/activate
-pip install --upgrade pip pip-tools
-pip-sync
 
 # Install Waveshare Python depedencies
 if [ -d TP_lib ]
@@ -112,7 +106,7 @@ cat <<END_OF_CONFIG >config.yml
 # The source for the bus times.  One of:
 # nextbuses - https://www.nextbuses.mobi
 # bustimes - https://bustimes.org
-# oxontime - https://oxontime.com (Oxfordshire only more accurate)
+# oxontime - https://oxontime.com (Oxfordshire only, more accurate)
 source: ${SOURCE}
 
 # A heartbeat file to update every time the display is updated

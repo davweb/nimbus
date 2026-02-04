@@ -1,3 +1,33 @@
+[project]
+name = "nimbus"
+version = "0.1.0"
+description = "Display bus arrival times on a Raspberry Pi with an e-ink screen."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "bs4",
+    "pyyaml",
+    "python-dateutil",
+    "requests",
+]
+
+[project.optional-dependencies]
+raspberrypi = [
+    "gpiozero",
+    "lgpio",
+    "numpy",
+    "Pillow",
+    "RPi.GPIO",
+    "smbus",
+    "spidev",
+]
+
+[dependency-groups]
+dev = [
+    "autopep8",
+    "pylint",
+]
+
 [tool.autopep8]
 max_line_length = 120
 in-place = true
